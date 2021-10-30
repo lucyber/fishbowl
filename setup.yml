@@ -1,0 +1,74 @@
+---
+- name: Deploy display
+  hosts: all
+  become: true
+
+  tasks:
+  - name: Create root directory
+    ansible.builtin.file:
+      path: "{{ DISPLAY_DIRECTORY }}"
+      state: directory
+      mode: '0755':
+
+  - name: Create news directory
+    ansible.builtin.file:
+      path: "{{ DISPLAY_DIRECTORY }}/news"
+      state: directory
+      mode: '0755':
+
+  - name: Create announcements directory
+    ansible.builtin.file:
+      path: "{{ DISPLAY_DIRECTORY }}/announcements"
+      state: directory
+      mode: '0755':
+
+  - name: Create qrcode directory
+    ansible.builtin.file:
+      path: "{{ DISPLAY_DIRECTORY }}/qrcode"
+      state: directory
+      mode: '0755':
+
+  - name: Copy init.sh
+    ansible.builtin.template:
+      src: init.sh
+      dest: "{{ DISPLAY_DIRECTORY }}/init.sh"
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy qrcode.sh
+    ansible.builtin.template:
+      src: qrcode/qrcode.sh
+      dest: "{{ DISPLAY_DIRECTORY }}/qrcode/qrcode.sh"
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy news.sh
+    ansible.builtin.template:
+      src: news/news.sh
+      dest: "{{ DISPLAY_DIRECTORY }}/news/news.sh"
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy scrape_news.sh
+    ansible.builtin.template:
+      src: news/scrape_news.sh
+      dest: "{{ DISPLAY_DIRECTORY }}/news/scrape_news.sh"
+      owner: root
+      group: root
+      mode: '0755'
+
+  - name: Copy slides.sh
+    ansible.builtin.template:
+      src: announcements/slidses.sh
+      dest: "{{ DISPLAY_DIRECTORY }}/announcements/slides.sh"
+      owner: root
+      group: root
+      mode: '0755'
+
+  vars:
+    DISPLAY_DIRECTORY: /opt/fishbowl
+    QR_CODE_URL: "{{ lookup('env', 'DISCORD_INVITE') }}"
+    NEWS_API_TOKEN: "{{ lookup('env', 'NEWS_API_TOKEN') }}"
