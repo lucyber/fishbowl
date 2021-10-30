@@ -11,7 +11,7 @@ tmux send-keys 'echo' 'C-m'
 tmux split-window -v
 tmux send-keys 'news/news.sh' 'C-m'
 tmux split-window -h -t 0
-tmux send-keys 'echo top right' 'C-m'
+tmux send-keys 'announcements/present.sh' 'C-m'
 tmux split-window -h -t 2
 tmux send-keys 'watch -t -c -n 60 qrcode/qrcode.sh' 'C-m'
 
