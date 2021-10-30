@@ -4,29 +4,49 @@
   become: true
 
   tasks:
+  - name: Install packages
+    package:
+      name:
+        - patat
+        - pv
+        - ccze
+        - npm
+        - tmux
+        - docker.io
+
+  - name: Install qr-code package
+    community.general.npm:
+      name: qrcode-terminal
+      global: yes
+
+  - name: Install news-cli package
+    community.general.npm:
+      name: clinews
+      global: yes
+
   - name: Create root directory
     ansible.builtin.file:
       path: "{{ DISPLAY_DIRECTORY }}"
       state: directory
-      mode: '0755':
+      mode: '0755'
 
   - name: Create news directory
     ansible.builtin.file:
       path: "{{ DISPLAY_DIRECTORY }}/news"
       state: directory
-      mode: '0755':
+      mode: '0755'
 
   - name: Create announcements directory
     ansible.builtin.file:
       path: "{{ DISPLAY_DIRECTORY }}/announcements"
       state: directory
-      mode: '0755':
+      mode: '0755'
 
   - name: Create qrcode directory
     ansible.builtin.file:
       path: "{{ DISPLAY_DIRECTORY }}/qrcode"
       state: directory
-      mode: '0755':
+      mode: '0755'
 
   - name: Copy init.sh
     ansible.builtin.template:
@@ -60,13 +80,71 @@
       group: root
       mode: '0755'
 
-  - name: Copy slides.sh
+  - name: Copy present.sh
     ansible.builtin.template:
-      src: announcements/slidses.sh
-      dest: "{{ DISPLAY_DIRECTORY }}/announcements/slides.sh"
+      src: announcements/present.sh
+      dest: "{{ DISPLAY_DIRECTORY }}/announcements/present.sh"
       owner: root
       group: root
       mode: '0755'
+
+  - name: Copy slides.md
+    copy:
+      src: announcements/slides.md
+      dest: "{{ DISPLAY_DIRECTORY }}/announcements/slides.md"
+      owner: root
+      group: root
+      mode: '0644'
+
+  - name: Check if newsfile exists
+    stat:
+      path: "{{ DISPLAY_DIRECTORY }}/news/newsfile"
+    register: register_newsfile
+
+  - name: Run news scraper to generate newsfile
+    shell:
+      cmd: "{{ DISPLAY_DIRECTORY }}/news/scrape_news.sh"
+    when: not register_newsfile.stat.exists
+
+  - name: Run news scraper nightly
+    cron:
+      name: "Scrape News"
+      minute: "0"
+      hour: "2"
+      user: root
+      job: "{{ DISPLAY_DIRECTORY }}/news/scrape_news.sh"
+
+  - name: Add user to run the script
+    user:
+      name: displayuser
+      shell: /bin/bash
+      groups: docker
+      append: yes
+      state: present
+
+  - name: Add init.sh to bashrc
+    lineinfile:
+      name: /home/displayuser/.bashrc
+      line: "[ `tty` == /dev/tty4 ] && chvt 4 && /opt/fishbowl/init.sh && exit"
+      state: present
+
+  - name: Check systemd directory
+    ansible.builtin.file:
+      path: "/etc/systemd/system/getty@tty4.service.d"
+      state: directory
+      mode: '0755'
+
+  - name: Copy autologin systemd unit
+    copy:
+      src: autologin.service
+      dest: /etc/systemd/system/getty@tty4.service.d/override.conf
+
+  - name: Enable systemd unit
+    systemd:
+      name: getty@tty4.service
+      daemon_reload: yes
+      state: started
+      enabled: yes
 
   vars:
     DISPLAY_DIRECTORY: /opt/fishbowl
