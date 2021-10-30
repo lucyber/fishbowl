@@ -148,5 +148,5 @@
 
   vars:
     DISPLAY_DIRECTORY: /opt/fishbowl
-    QR_CODE_URL: "{{ lookup('env', 'DISCORD_INVITE') }}"
+    QR_CODE_URL: "{{ lookup('env', 'QR_CODE_URL') }}"
     NEWS_API_TOKEN: "{{ lookup('env', 'NEWS_API_TOKEN') }}"
