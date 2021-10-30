@@ -1,6 +1,6 @@
 ---
 - name: Deploy display
-  hosts: all
+  hosts: localhost
   become: true
 
   tasks:

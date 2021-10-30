@@ -25,7 +25,7 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: Deploy with Ansible
-        run: ansible-playbook setup.yml -i localhost -e "ansible_become_pass=${{ secrets.BECOME_PASS }}"
+        run: ansible-playbook setup.yml -e "ansible_become_pass=${{ secrets.BECOME_PASS }}"
         env:
           QR_CODE_URL: ${{ secrets.QR_CODE_URL }}
           NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
