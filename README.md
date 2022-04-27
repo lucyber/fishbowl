@@ -2,6 +2,8 @@
 
 fishbowl is your super duper coolio hacker kiosk display.
 
+![fishbowl](./fishbowl.png)
+
 fishbowl allows you to display [hollywood](https://github.com/dustinkirkland/hollywood), a markdown textual based powerpoint display using [patat](https://github.com/jaspervdj/patat), a listing of all the top news headlines using [clinews](https://github.com/shogunpurple/clinews), and a QR Code for some information using [qrcode-terminal](https://github.com/gtanner/qrcode-terminal).
 
 It then displays all of this information using tmux to take advantage of all of your juicy screen real estate.
